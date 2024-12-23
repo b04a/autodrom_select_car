@@ -1,4 +1,5 @@
 import asyncio
+import subprocess
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
@@ -6,8 +7,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 
+
 # Токен вашего бота
-API_TOKEN = '8005517380:AAGxa2KjbwDrM0ndrGYIDB0TTh6dLzFN-SY'
+API_TOKEN = 'XXXX'
 
 # Инициализация бота и диспетчера
 bot = Bot(token=API_TOKEN)
@@ -62,8 +64,8 @@ async def process_price_range(message: Message, state: FSMContext):
         # Вывод в чат
         await message.answer(f"Ищем машины в диапазоне от {min_price} до {max_price} рублей.")
 
-        # Вывод в терминал
-        print(f"Минимальная цена: {min_price}, Максимальная цена: {max_price}")
+        # Запуск Playwright скрипта
+        subprocess.Popen(["python", "method2.py", str(min_price), str(max_price)])
 
         # Завершаем состояние
         await state.clear()
