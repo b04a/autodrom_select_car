@@ -9,7 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 
 # Токен вашего бота
-API_TOKEN = 'XXXX'
+API_TOKEN = '8005517380:AAGxa2KjbwDrM0ndrGYIDB0TTh6dLzFN-SY'
 
 # Инициализация бота и диспетчера
 bot = Bot(token=API_TOKEN)
@@ -64,13 +64,14 @@ async def process_price_range(message: Message, state: FSMContext):
         # Вывод в чат
         await message.answer(f"Ищем машины в диапазоне от {min_price} до {max_price} рублей.")
 
-        # Запуск Playwright скрипта
-        subprocess.Popen(["python", "method2.py", str(min_price), str(max_price)])
+        # Запуск Playwright скрипта с передачей chat_id
+        subprocess.Popen(["python", "method2.py", str(min_price), str(max_price), str(message.chat.id)])
 
         # Завершаем состояние
         await state.clear()
     except ValueError:
         await message.answer("Пожалуйста, введите данные в правильном формате: 100000 200000")
+
 
 
 # Асинхронный запуск бота

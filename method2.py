@@ -4,11 +4,21 @@ from playwright.async_api import async_playwright
 from fake_useragent import FakeUserAgent
 import json
 from pathlib import Path
+import requests
+
+API_TOKEN = '8005517380:AAGxa2KjbwDrM0ndrGYIDB0TTh6dLzFN-SY'
+
+async def send_message(chat_id, text):
+    """Функция для отправки сообщения пользователю в Telegram."""
+    url = f"https://api.telegram.org/bot{API_TOKEN}/sendMessage"
+    data = {"chat_id": chat_id, "text": text}
+    requests.post(url, data=data)
 
 
 async def main():
     min_price = sys.argv[1]
     max_price = sys.argv[2]
+    chat_id = sys.argv[3]
 
     async with async_playwright() as p:
 
@@ -83,15 +93,36 @@ async def main():
                             src = await photo_car.get_attribute("src")
                             print(src)
                         else:
-                            print("https://xn--90aha1bhcc.xn--p1ai/img/placeholder.png")
+                            src = "https://xn--90aha1bhcc.xn--p1ai/img/placeholder.png"
                     except Exception as e:
                         print(f"Ошибка при получении фото: {e}")
 
-                    #Output info about car
-                    print(f"Название: {car_name[7:]}")
-                    print(f"Цена: {car_price}")
+                    # #Output info about car
+                    # print(f"Название: {car_name[7:]}")
+                    # print(f"Цена: {car_price}")
+                    # for j in range(len(descriptions)):
+                    #     print(f"{elements[j]}: {descriptions[j]}")
+                    # Формируем сообщение
+                    message = f"🚗 <b>{car_name[7:]}</b>\n<b>Цена</b>: <i>{car_price}</i>\n"
                     for j in range(len(descriptions)):
-                        print(f"{elements[j]}: {descriptions[j]}")
+                        message += f"<b>{elements[j]}</b>: <i>{descriptions[j]}</i>\n"
+
+                    #message += f"Фото: {src}"
+
+                    # Отправляем фото с подписью
+                    try:
+                        url = f"https://api.telegram.org/bot{API_TOKEN}/sendPhoto"
+                        data = {
+                            "chat_id": chat_id,
+                            "photo": src,
+                            "caption": message,
+                            "parse_mode": "HTML"
+                        }
+                        requests.post(url, data=data)
+                    except Exception as e:
+                        print(f"Ошибка при отправке фото: {e}")
+                        # Если не удалось отправить фото, отправляем только текст
+                        await send_message(chat_id, message)
 
                     # Спросить у пользователя, открывать ли следующую машину
                     result = input("Next? (yes/no): ").strip().lower()
