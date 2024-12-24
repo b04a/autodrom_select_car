@@ -25,6 +25,7 @@ class SearchCarState(StatesGroup):
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="🚗 Найти машину")],
+        [KeyboardButton(text="Дальше")]
     ],
     resize_keyboard=True
 )
@@ -40,6 +41,13 @@ async def start_command(message: Message):
         caption="Привет! Я бот для поиска машин на основе сервиса drom.ru! Открывай меню!",
         reply_markup=main_keyboard
     )
+
+# Хэндлер кнопки "Дальше"
+@dp.message(F.text == "Дальше")
+async def next_car(message: Message, state: FSMContext):
+    # Устанавливаем состояние в следующую машину
+    await state.update_data(next_car=True)  # Название состояния, которое будет обработано в method2.py
+    await message.answer("Идем к следующей машине...")  # Ответ пользователю
 
 
 # Хэндлер кнопки "🚗 Найти машину"
@@ -73,12 +81,10 @@ async def process_price_range(message: Message, state: FSMContext):
         await message.answer("Пожалуйста, введите данные в правильном формате: 100000 200000")
 
 
-
 # Асинхронный запуск бота
 async def main():
     print("Бот запущен!")
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
